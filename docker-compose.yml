@@ -1,0 +1,59 @@
+version: '3.9'
+services:
+  gateway:
+    container_name: gateway
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile_Gateway 
+    environment:
+      SSHUSER: ${ECS_USER}
+      SSHPASS: ${ECS_PASSWORD}
+    expose:
+      - '9004'
+      - '9005'
+    ports:
+      - '9005:9005'
+    volumes:
+      - ./ssh:/root/.ssh
+  robpress:
+    container_name: robpress
+    build: 
+      context: .
+      args:
+        - ECS_USER=${ECS_USER:?ECS Username is required}
+        - ROBPRESS_USER=${ROBPRESS_USER:?Robpress Username is required}
+        - ROBPRESS_PASSWORD=${ROBPRESS_PASSWORD:?Robpress Password is required}
+    ports:
+      - '9000:80'
+    volumes:
+      - ./robpress:/var/www/html/
+      - ./ssh:/root/.ssh
+    environment:
+      ECS_USER: ${ECS_USER:?ECS Username is required}
+      ROBPRESS_USER: ${ROBPRESS_USER:?Robpress Username is required}
+      ROBPRESS_PASSWORD: ${ROBPRESS_PASSWORD:?Robpress Password is required}
+    depends_on:
+      - db
+      - gateway
+  db:
+    image: mysql
+    container_name: db
+    environment:
+      MYSQL_DATABASE: ${ROBPRESS_USER}
+      MYSQL_USER: ${ROBPRESS_USER}
+      MYSQL_PASSWORD: ${ROBPRESS_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ROBPRESS_PASSWORD}
+    ports:
+      - '9001:3306'
+    expose:
+      - '3306'
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin 
+    environment:
+      PMA_HOST: db
+      PMA_USER: ${ROBPRESS_USER}
+      PMA_PASSWORD: ${ROBPRESS_PASSWORD}
+    ports:
+      - '9002:80'

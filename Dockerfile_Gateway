@@ -1,0 +1,4 @@
+FROM debian
+RUN apt-get update && apt-get install -y sshpass 
+STOPSIGNAL SIGKILL
+CMD sshpass -e ssh -o StrictHostKeyChecking=no -v -4 ${SSHUSER}@uglogin.ecs.soton.ac.uk -NT -L 0.0.0.0:9004:ofb-robpress.soton.ac.uk:443 -L 0.0.0.0:9005:ofb-robpress.soton.ac.uk:22 

@@ -1,0 +1,33 @@
+Docker-based RobPress Environment (BETA)
+========================================
+
+Please note that this is offered as an advanced alternative to the RobPress Workstation VM approach, which is the recommended way to work with RobPress, as described at https://robpress.ecs.soton.ac.uk
+If you are not able to run the VM (e.g. an ARM based device), note that you can use RobPress Workstation via the ECS GPU service as described at http://ecs.gg/gpu and http://ecs.gg/remote or from university computers.
+
+If you wish to use the Docker environment, please follow these instructions:
+
+1. git clone http://ofb-labs.soton.ac.uk:3000/COMP3226/getrob.git . (You will need to be on the VPN)
+2. Edit the .env file with your team username and password and your ECS username
+3. Either add your ECS password to the .env file, or add a non-passphrased OpenSSH private key to the ssh folder
+4. Run 'docker compose up' to prepare and launch the containers. This will launch a database, an SSH gateway (so you do not require VPN) to the RobPress server, the RobPress server (running PHP and Apache) and a phpmyadmin server
+
+Note that this setup once installed should work without requiring the VPN to be enabled, due to the gateway.
+
+To access your services:
+
+http://localhost:9000 - RobPress website
+http://localhost:9002 - phpmyadmin
+
+Your RobPress files can be accessed inside the 'robpress' folder. You can use outside tools, such as VSCode to edit and manage these files. Make sure any changes are committed to git, as these will be refreshed when you restart the containers.
+
+You can use git via 'docker exec robpress git <command>' inside the robpress folder (for example, docker exec robpress git pull or docker exec robpress git commit).
+
+If you wish to use git outside the container, you can do so using the SSH key that gets installed in the ssh folder.
+
+To turn off these services, run 'docker compose down'
+
+As this is an experimental and advanced approach, we are only able to offer minimal support for those choosing to use this method.
+
+Please remember that these containers are ephemeral - the local files and database will be destroyed and recreated each run. Any changes you wish to keep must be committed to git!  
+
+If you have any suggestions or improvements for this configuration or setup, they would be most welcome - feel free to get in touch.
